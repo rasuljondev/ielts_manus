@@ -1,0 +1,73 @@
+[
+  {
+    "id": "1",
+    "testId": "1",
+    "userId": "3",
+    "assignedBy": "2",
+    "assignedAt": "2024-02-18T00:00:00Z",
+    "dueDate": "2024-02-25T23:59:59Z",
+    "status": "completed",
+    "resultId": "1"
+  },
+  {
+    "id": "2",
+    "testId": "2",
+    "userId": "3",
+    "assignedBy": "2",
+    "assignedAt": "2024-02-23T00:00:00Z",
+    "dueDate": "2024-03-02T23:59:59Z",
+    "status": "completed",
+    "resultId": "2"
+  },
+  {
+    "id": "3",
+    "testId": "3",
+    "userId": "4",
+    "assignedBy": "7",
+    "assignedAt": "2024-02-20T00:00:00Z",
+    "dueDate": "2024-02-27T23:59:59Z",
+    "status": "completed",
+    "resultId": "3"
+  },
+  {
+    "id": "4",
+    "testId": "1",
+    "userId": "5",
+    "assignedBy": "2",
+    "assignedAt": "2024-02-26T00:00:00Z",
+    "dueDate": "2024-03-05T23:59:59Z",
+    "status": "in_progress",
+    "resultId": "4"
+  },
+  {
+    "id": "5",
+    "testId": "4",
+    "userId": "6",
+    "assignedBy": null,
+    "assignedAt": "2024-02-27T00:00:00Z",
+    "dueDate": "2024-03-06T23:59:59Z",
+    "status": "not_started",
+    "resultId": "5"
+  },
+  {
+    "id": "6",
+    "testId": "5",
+    "userId": "3",
+    "assignedBy": "2",
+    "assignedAt": "2024-03-01T00:00:00Z",
+    "dueDate": "2024-03-08T23:59:59Z",
+    "status": "not_started",
+    "resultId": null
+  },
+  {
+    "id": "7",
+    "testId": "2",
+    "userId": "5",
+    "assignedBy": "2",
+    "assignedAt": "2024-03-01T00:00:00Z",
+    "dueDate": "2024-03-08T23:59:59Z",
+    "status": "not_started",
+    "resultId": null
+  }
+]
+

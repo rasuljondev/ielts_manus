@@ -1,0 +1,57 @@
+[
+  {
+    "id": "1",
+    "name": "Cambridge English Center",
+    "location": "Cambridge, UK",
+    "adminId": "2",
+    "studentsCount": 2,
+    "testsCompleted": 15,
+    "createdAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": "2",
+    "name": "Oxford Language Institute",
+    "location": "Oxford, UK",
+    "adminId": "7",
+    "studentsCount": 1,
+    "testsCompleted": 8,
+    "createdAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": "3",
+    "name": "British Council",
+    "location": "London, UK",
+    "adminId": null,
+    "studentsCount": 1,
+    "testsCompleted": 3,
+    "createdAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": "4",
+    "name": "IDP Education",
+    "location": "Sydney, Australia",
+    "adminId": null,
+    "studentsCount": 0,
+    "testsCompleted": 0,
+    "createdAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": "5",
+    "name": "IELTS Academy",
+    "location": "Toronto, Canada",
+    "adminId": null,
+    "studentsCount": 0,
+    "testsCompleted": 0,
+    "createdAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": "6",
+    "name": "Global English Center",
+    "location": "New York, USA",
+    "adminId": null,
+    "studentsCount": 0,
+    "testsCompleted": 0,
+    "createdAt": "2024-01-01T00:00:00Z"
+  }
+]
+

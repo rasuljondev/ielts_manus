@@ -1,0 +1,122 @@
+[
+  {
+    "id": "1",
+    "title": "IELTS Academic Practice Test 1",
+    "description": "Complete IELTS Academic test covering Reading, Listening, and Writing sections",
+    "type": "academic",
+    "sections": [
+      {
+        "id": "reading",
+        "name": "Reading",
+        "duration": 60,
+        "questions": 40
+      },
+      {
+        "id": "listening",
+        "name": "Listening",
+        "duration": 30,
+        "questions": 40
+      },
+      {
+        "id": "writing",
+        "name": "Writing",
+        "duration": 60,
+        "questions": 2
+      }
+    ],
+    "totalDuration": 150,
+    "totalQuestions": 82,
+    "createdBy": "2",
+    "createdAt": "2024-02-01T00:00:00Z",
+    "isActive": true
+  },
+  {
+    "id": "2",
+    "title": "IELTS General Practice Test 1",
+    "description": "Complete IELTS General test for immigration and work purposes",
+    "type": "general",
+    "sections": [
+      {
+        "id": "reading",
+        "name": "Reading",
+        "duration": 60,
+        "questions": 40
+      },
+      {
+        "id": "listening",
+        "name": "Listening",
+        "duration": 30,
+        "questions": 40
+      },
+      {
+        "id": "writing",
+        "name": "Writing",
+        "duration": 60,
+        "questions": 2
+      }
+    ],
+    "totalDuration": 150,
+    "totalQuestions": 82,
+    "createdBy": "2",
+    "createdAt": "2024-02-05T00:00:00Z",
+    "isActive": true
+  },
+  {
+    "id": "3",
+    "title": "IELTS Reading Focus Test",
+    "description": "Intensive reading practice with various question types",
+    "type": "academic",
+    "sections": [
+      {
+        "id": "reading",
+        "name": "Reading",
+        "duration": 60,
+        "questions": 40
+      }
+    ],
+    "totalDuration": 60,
+    "totalQuestions": 40,
+    "createdBy": "7",
+    "createdAt": "2024-02-10T00:00:00Z",
+    "isActive": true
+  },
+  {
+    "id": "4",
+    "title": "IELTS Listening Focus Test",
+    "description": "Comprehensive listening practice with audio materials",
+    "type": "general",
+    "sections": [
+      {
+        "id": "listening",
+        "name": "Listening",
+        "duration": 30,
+        "questions": 40
+      }
+    ],
+    "totalDuration": 30,
+    "totalQuestions": 40,
+    "createdBy": "7",
+    "createdAt": "2024-02-12T00:00:00Z",
+    "isActive": true
+  },
+  {
+    "id": "5",
+    "title": "IELTS Writing Focus Test",
+    "description": "Targeted writing practice with Task 1 and Task 2",
+    "type": "academic",
+    "sections": [
+      {
+        "id": "writing",
+        "name": "Writing",
+        "duration": 60,
+        "questions": 2
+      }
+    ],
+    "totalDuration": 60,
+    "totalQuestions": 2,
+    "createdBy": "2",
+    "createdAt": "2024-02-15T00:00:00Z",
+    "isActive": true
+  }
+]
+

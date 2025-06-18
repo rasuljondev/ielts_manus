@@ -1,0 +1,65 @@
+[
+  {
+    "id": "1",
+    "name": "Super Administrator",
+    "email": "superadmin@gmail.com",
+    "role": "superadmin",
+    "phone": "+1234567890",
+    "createdAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": "2",
+    "name": "John Smith",
+    "email": "eduadmin@gmail.com",
+    "role": "eduadmin",
+    "phone": "+1234567891",
+    "educationCenter": "Cambridge English Center",
+    "createdAt": "2024-01-15T00:00:00Z"
+  },
+  {
+    "id": "3",
+    "name": "Alice Johnson",
+    "email": "user@gmail.com",
+    "role": "user",
+    "phone": "+1234567892",
+    "educationCenter": "Cambridge English Center",
+    "createdAt": "2024-02-01T00:00:00Z"
+  },
+  {
+    "id": "4",
+    "name": "Bob Wilson",
+    "email": "bob.wilson@email.com",
+    "role": "user",
+    "phone": "+1234567893",
+    "educationCenter": "Oxford Language Institute",
+    "createdAt": "2024-02-05T00:00:00Z"
+  },
+  {
+    "id": "5",
+    "name": "Carol Davis",
+    "email": "carol.davis@email.com",
+    "role": "user",
+    "phone": "+1234567894",
+    "educationCenter": "Cambridge English Center",
+    "createdAt": "2024-02-10T00:00:00Z"
+  },
+  {
+    "id": "6",
+    "name": "David Brown",
+    "email": "david.brown@email.com",
+    "role": "user",
+    "phone": "+1234567895",
+    "educationCenter": "British Council",
+    "createdAt": "2024-02-15T00:00:00Z"
+  },
+  {
+    "id": "7",
+    "name": "Emma Taylor",
+    "email": "emma.taylor@email.com",
+    "role": "eduadmin",
+    "phone": "+1234567896",
+    "educationCenter": "Oxford Language Institute",
+    "createdAt": "2024-01-20T00:00:00Z"
+  }
+]
+

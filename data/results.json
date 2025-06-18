@@ -1,0 +1,115 @@
+[
+  {
+    "id": "1",
+    "userId": "3",
+    "testId": "1",
+    "status": "completed",
+    "startedAt": "2024-02-20T09:00:00Z",
+    "completedAt": "2024-02-20T11:30:00Z",
+    "scores": {
+      "reading": 7.5,
+      "listening": 8.0,
+      "writing": 6.5,
+      "overall": 7.3
+    },
+    "sectionResults": {
+      "reading": {
+        "correctAnswers": 30,
+        "totalQuestions": 40,
+        "timeSpent": 58
+      },
+      "listening": {
+        "correctAnswers": 32,
+        "totalQuestions": 40,
+        "timeSpent": 30
+      },
+      "writing": {
+        "task1Score": 6.0,
+        "task2Score": 7.0,
+        "timeSpent": 60
+      }
+    },
+    "feedback": "Good performance overall. Focus on improving writing Task 1 skills.",
+    "confirmedBy": "2",
+    "confirmedAt": "2024-02-20T15:00:00Z"
+  },
+  {
+    "id": "2",
+    "userId": "3",
+    "testId": "2",
+    "status": "completed",
+    "startedAt": "2024-02-25T10:00:00Z",
+    "completedAt": "2024-02-25T12:30:00Z",
+    "scores": {
+      "reading": 8.0,
+      "listening": 7.5,
+      "writing": 7.0,
+      "overall": 7.5
+    },
+    "sectionResults": {
+      "reading": {
+        "correctAnswers": 32,
+        "totalQuestions": 40,
+        "timeSpent": 55
+      },
+      "listening": {
+        "correctAnswers": 30,
+        "totalQuestions": 40,
+        "timeSpent": 30
+      },
+      "writing": {
+        "task1Score": 7.0,
+        "task2Score": 7.0,
+        "timeSpent": 58
+      }
+    },
+    "feedback": "Excellent improvement in writing. Keep practicing listening skills.",
+    "confirmedBy": "2",
+    "confirmedAt": "2024-02-25T16:00:00Z"
+  },
+  {
+    "id": "3",
+    "userId": "4",
+    "testId": "3",
+    "status": "completed",
+    "startedAt": "2024-02-22T14:00:00Z",
+    "completedAt": "2024-02-22T15:00:00Z",
+    "scores": {
+      "reading": 6.5,
+      "overall": 6.5
+    },
+    "sectionResults": {
+      "reading": {
+        "correctAnswers": 26,
+        "totalQuestions": 40,
+        "timeSpent": 60
+      }
+    },
+    "feedback": "Good reading comprehension. Practice time management.",
+    "confirmedBy": "7",
+    "confirmedAt": "2024-02-22T17:00:00Z"
+  },
+  {
+    "id": "4",
+    "userId": "5",
+    "testId": "1",
+    "status": "in_progress",
+    "startedAt": "2024-02-28T09:00:00Z",
+    "currentSection": "listening",
+    "sectionResults": {
+      "reading": {
+        "correctAnswers": 28,
+        "totalQuestions": 40,
+        "timeSpent": 60
+      }
+    }
+  },
+  {
+    "id": "5",
+    "userId": "6",
+    "testId": "4",
+    "status": "not_started",
+    "assignedAt": "2024-02-27T00:00:00Z"
+  }
+]
+

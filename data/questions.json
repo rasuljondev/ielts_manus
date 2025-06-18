@@ -1,0 +1,75 @@
+[
+  {
+    "id": "1",
+    "testId": "1",
+    "section": "reading",
+    "type": "multiple_choice",
+    "question": "According to the passage, what is the main cause of climate change?",
+    "options": [
+      "Natural weather patterns",
+      "Human activities and greenhouse gas emissions",
+      "Solar radiation changes",
+      "Ocean current variations"
+    ],
+    "correctAnswer": 1,
+    "passage": "Climate change refers to long-term shifts in global temperatures and weather patterns. While climate variations occur naturally, scientific evidence shows that human activities have been the main driver of climate change since the 1800s, primarily through the burning of fossil fuels which releases greenhouse gases into the atmosphere."
+  },
+  {
+    "id": "2",
+    "testId": "1",
+    "section": "reading",
+    "type": "true_false_not_given",
+    "question": "The passage states that climate change only affects temperature.",
+    "options": ["True", "False", "Not Given"],
+    "correctAnswer": 1,
+    "passage": "Climate change affects not only global temperatures but also weather patterns, sea levels, and ecosystem dynamics worldwide."
+  },
+  {
+    "id": "3",
+    "testId": "1",
+    "section": "reading",
+    "type": "fill_in_blank",
+    "question": "Complete the sentence: The burning of _______ fuels is the primary cause of increased greenhouse gas emissions.",
+    "correctAnswer": "fossil",
+    "passage": "The burning of fossil fuels such as coal, oil, and gas releases carbon dioxide and other greenhouse gases into the atmosphere."
+  },
+  {
+    "id": "4",
+    "testId": "1",
+    "section": "listening",
+    "type": "multiple_choice",
+    "question": "What time does the library close on weekdays?",
+    "options": ["8:00 PM", "9:00 PM", "10:00 PM", "11:00 PM"],
+    "correctAnswer": 2,
+    "audioFile": "/audio/library_hours.mp3"
+  },
+  {
+    "id": "5",
+    "testId": "1",
+    "section": "writing",
+    "type": "task1",
+    "question": "The chart below shows the percentage of households in different income brackets in Country X from 2010 to 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant.",
+    "minWords": 150,
+    "chartData": {
+      "type": "bar_chart",
+      "title": "Household Income Distribution",
+      "years": ["2010", "2015", "2020"],
+      "categories": ["Low Income", "Middle Income", "High Income"],
+      "data": [
+        [45, 40, 35],
+        [40, 45, 50],
+        [15, 15, 15]
+      ]
+    }
+  },
+  {
+    "id": "6",
+    "testId": "1",
+    "section": "writing",
+    "type": "task2",
+    "question": "Some people believe that technology has made our lives more complicated, while others argue that it has made life easier. Discuss both views and give your own opinion.",
+    "minWords": 250,
+    "instructions": "Give reasons for your answer and include any relevant examples from your own knowledge or experience."
+  }
+]
+
