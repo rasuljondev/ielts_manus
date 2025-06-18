@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Button from '@/components/Button'
 import InputField from '@/components/InputField'
 import Card from '@/components/Card'
 import PageTransition from '@/components/PageTransition'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -14,45 +15,52 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
+  const { signIn, profile, loading } = useAuth()
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!loading && profile) {
+      redirectBasedOnRole(profile.role)
+    }
+  }, [profile, loading])
+
+  const redirectBasedOnRole = (role: string) => {
+    // Redirect to main dashboard page which will handle role-based routing
+    router.push('/dashboard')
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')
 
-    // Mock authentication logic
-    const mockCredentials = {
-      'superadmin@gmail.com': { password: '12345678', role: 'superadmin' },
-      'eduadmin@gmail.com': { password: '12345678', role: 'eduadmin' },
-      'user@gmail.com': { password: '12345678', role: 'user' }
+    try {
+      await signIn(email, password)
+      // Don't redirect here - let the useEffect handle it when profile loads
+    } catch (error: any) {
+      console.error('Login error:', error)
+      setError(error.message || 'Invalid email or password')
+    } finally {
+      setIsLoading(false)
     }
+  }
 
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
+  // Show loading if auth is still loading
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    )
+  }
 
-    const user = mockCredentials[email as keyof typeof mockCredentials]
-    
-    if (user && user.password === password) {
-      // Store user info in localStorage (mock session)
-      localStorage.setItem('user', JSON.stringify({ email, role: user.role }))
-      
-      // Redirect based on role
-      switch (user.role) {
-        case 'superadmin':
-          router.push('/dashboard/superadmin')
-          break
-        case 'eduadmin':
-          router.push('/dashboard/eduadmin')
-          break
-        case 'user':
-          router.push('/dashboard/user')
-          break
-      }
-    } else {
-      setError('Invalid email or password')
-    }
-    
-    setIsLoading(false)
+  // Don't show login form if already authenticated
+  if (profile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    )
   }
 
   return (
@@ -114,7 +122,7 @@ export default function LoginPage() {
                 Don't have an account?{' '}
                 <button
                   onClick={() => router.push('/signup')}
-                  className="text-primary-600 hover:text-primary-700 font-medium"
+                  className="text-blue-600 hover:text-blue-700 font-medium"
                 >
                   Sign up
                 </button>
@@ -128,6 +136,9 @@ export default function LoginPage() {
                 <p><strong>EduAdmin:</strong> eduadmin@gmail.com / 12345678</p>
                 <p><strong>User:</strong> user@gmail.com / 12345678</p>
               </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Note: These are demo credentials. In production, users will sign up through the signup page.
+              </p>
             </div>
           </motion.div>
         </Card>
