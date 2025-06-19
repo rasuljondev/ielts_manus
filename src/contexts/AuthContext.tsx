@@ -49,14 +49,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const currentUser = await authService.getCurrentUser()
         setUser(currentUser)
-        
         if (currentUser) {
           await loadUserProfile(currentUser)
         }
-      } catch (error) {
-        console.error('Error getting initial session:', error)
-        setUser(null)
-        setProfile(null)
+      } catch (error: any) {
+        if (
+          error?.name === 'AuthSessionMissingError' ||
+          error?.message?.includes('Auth session missing')
+        ) {
+          setUser(null)
+          setProfile(null)
+        } else {
+          console.error('Error getting initial session:', error)
+          setUser(null)
+          setProfile(null)
+        }
       } finally {
         setLoading(false)
       }
@@ -68,17 +75,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = authService.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email)
-        
-        const currentUser = session?.user ?? null
-        setUser(currentUser)
-        
-        if (currentUser) {
-          await loadUserProfile(currentUser)
-        } else {
-          setProfile(null)
+        try {
+          const currentUser = session?.user ?? null
+          setUser(currentUser)
+          if (currentUser) {
+            await loadUserProfile(currentUser)
+          } else {
+            setProfile(null)
+          }
+        } catch (error: any) {
+          if (
+            error?.name === 'AuthSessionMissingError' ||
+            error?.message?.includes('Auth session missing')
+          ) {
+            setUser(null)
+            setProfile(null)
+          } else {
+            console.error('Error in onAuthStateChange:', error)
+            setUser(null)
+            setProfile(null)
+          }
+        } finally {
+          setLoading(false)
         }
-        
-        setLoading(false)
       }
     )
 

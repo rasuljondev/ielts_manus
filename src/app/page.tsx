@@ -11,15 +11,6 @@ export default function HomePage() {
   const router = useRouter()
   const { signOut } = useAuth()
 
-  useEffect(() => {
-    // Check if user is already logged in
-    const user = localStorage.getItem('user')
-    if (user) {
-      const userData = JSON.parse(user)
-      router.push(`/dashboard/${userData.role}`)
-    }
-  }, [router])
-
   const handleSignIn = async () => {
     await signOut()
     router.push('/login')
