@@ -8,12 +8,18 @@ import InputField from '@/components/InputField'
 import Card from '@/components/Card'
 import PageTransition from '@/components/PageTransition'
 import { useAuth } from '@/contexts/AuthContext'
+import { supabase } from '@/lib/supabase'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showForgot, setShowForgot] = useState(false)
+  const [forgotStep, setForgotStep] = useState<'choose' | 'user' | 'admin' | 'done'>('choose')
+  const [forgotEmail, setForgotEmail] = useState('')
+  const [forgotMsg, setForgotMsg] = useState('')
+  const [forgotErr, setForgotErr] = useState('')
   const router = useRouter()
   const { signIn, profile, loading } = useAuth()
 
@@ -33,7 +39,6 @@ export default function LoginPage() {
     e.preventDefault()
     setIsLoading(true)
     setError('')
-
     try {
       await signIn(email, password)
       // Don't redirect here - let the useEffect handle it when profile loads
@@ -42,6 +47,28 @@ export default function LoginPage() {
       setError(error.message || 'Invalid email or password')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  // Forgot password logic
+  const handleForgotSend = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setForgotMsg('')
+    setForgotErr('')
+    if (!forgotEmail) {
+      setForgotErr('Please enter your email.')
+      return
+    }
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail)
+      if (error) {
+        setForgotErr(error.message)
+        return
+      }
+      setForgotMsg('Password reset email sent! Check your inbox.')
+      setForgotStep('done')
+    } catch (err: any) {
+      setForgotErr(err.message || 'Failed to send reset email')
     }
   }
 
@@ -117,7 +144,7 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <div className="mt-6 text-center">
+            <div className="flex justify-between items-center mt-4">
               <p className="text-gray-600 text-sm">
                 Don't have an account?{' '}
                 <button
@@ -127,6 +154,13 @@ export default function LoginPage() {
                   Sign up
                 </button>
               </p>
+              <button
+                className="text-blue-600 hover:underline text-sm font-medium"
+                onClick={() => { setShowForgot(true); setForgotStep('choose'); setForgotEmail(''); setForgotMsg(''); setForgotErr(''); }}
+                type="button"
+              >
+                Forgot Password?
+              </button>
             </div>
 
             <div className="mt-8 p-4 bg-gray-50 rounded-lg">
@@ -142,6 +176,73 @@ export default function LoginPage() {
             </div>
           </motion.div>
         </Card>
+
+        {/* Forgot Password Modal */}
+        {showForgot && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-80">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-xl shadow-xl p-8 w-full max-w-md relative"
+            >
+              <button
+                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-2xl"
+                onClick={() => setShowForgot(false)}
+                aria-label="Close"
+                type="button"
+              >
+                &times;
+              </button>
+              {forgotStep === 'choose' && (
+                <div>
+                  <h2 className="text-xl font-bold mb-4">Forgot Password</h2>
+                  <p className="mb-6 text-gray-600">Are you a user or admin?</p>
+                  <div className="flex gap-4">
+                    <Button onClick={() => setForgotStep('user')} className="flex-1">User</Button>
+                    <Button onClick={() => setForgotStep('admin')} variant="secondary" className="flex-1">Admin</Button>
+                  </div>
+                </div>
+              )}
+              {forgotStep === 'user' && (
+                <form onSubmit={handleForgotSend} className="space-y-4">
+                  <h2 className="text-xl font-bold mb-2">Reset Password</h2>
+                  <InputField
+                    label="Email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={forgotEmail}
+                    onChange={e => setForgotEmail(e.target.value)}
+                    required
+                  />
+                  <Button type="submit" className="w-full">Send Reset Email</Button>
+                  {forgotMsg && <div className="text-green-600 text-sm text-center">{forgotMsg}</div>}
+                  {forgotErr && <div className="text-red-600 text-sm text-center">{forgotErr}</div>}
+                  <div className="text-center mt-2">
+                    <button type="button" className="text-blue-600 hover:underline text-sm" onClick={() => setForgotStep('choose')}>Back</button>
+                  </div>
+                </form>
+              )}
+              {forgotStep === 'admin' && (
+                <div className="text-center">
+                  <h2 className="text-xl font-bold mb-4">Admin Password Reset</h2>
+                  <p className="mb-4 text-gray-600">Call super admin <span className="font-semibold">99 220 08 80</span> to reset your password.</p>
+                  <Button onClick={() => setShowForgot(false)} className="w-full">Close</Button>
+                  <div className="text-center mt-2">
+                    <button type="button" className="text-blue-600 hover:underline text-sm" onClick={() => setForgotStep('choose')}>Back</button>
+                  </div>
+                </div>
+              )}
+              {forgotStep === 'done' && (
+                <div className="text-center">
+                  <h2 className="text-xl font-bold mb-4">Check Your Email</h2>
+                  <p className="mb-4 text-green-600">A password reset email has been sent if the email exists in our system.</p>
+                  <Button onClick={() => setShowForgot(false)} className="w-full">Close</Button>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        )}
       </div>
     </PageTransition>
   )

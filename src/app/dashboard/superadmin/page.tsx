@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Button from '@/components/Button'
@@ -9,7 +9,7 @@ import InputField from '@/components/InputField'
 import PageTransition from '@/components/PageTransition'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { useAuth } from '@/contexts/AuthContext'
-import { centerService, testService } from '@/lib/database'
+import { centerService, testService, userService, assignedTestService } from '@/lib/database'
 import type { User, EducationCenter, Test } from '@/lib/supabase'
 
 export default function SuperAdminDashboard() {
@@ -19,12 +19,14 @@ export default function SuperAdminDashboard() {
   const [tests, setTests] = useState<Test[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('overview')
+  const [activities, setActivities] = useState<any[]>([])
   const router = useRouter()
   const { profile, signOut } = useAuth()
 
   useEffect(() => {
     if (profile) {
       loadData()
+      loadActivities()
     }
   }, [profile])
 
@@ -37,15 +39,93 @@ export default function SuperAdminDashboard() {
         centerService.getAllCenters(),
         testService.getAllTests()
       ])
-      // Separate EduAdmins and Students
+      setCenters(centersData)
       setEduAdmins(usersData.filter((u: User) => u.role === 'eduadmin'))
       setStudents(usersData.filter((u: User) => u.role === 'user'))
-      setCenters(centersData)
       setTests(testsData)
     } catch (error) {
       console.error('Error loading data:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const getCenterName = (centerId: string) => {
+    const center = centers.find((c) => c.id === centerId)
+    return center ? center.name : ''
+  }
+
+  const loadActivities = async () => {
+    try {
+      // Fetch users with emails from the API
+      const usersRes = await fetch('/api/users-with-emails')
+      if (!usersRes.ok) {
+        throw new Error('Failed to fetch users data')
+      }
+      const usersData = await usersRes.json()
+
+      const [tests, assignedTests, centers] = await Promise.all([
+        testService.getAllTests(),
+        assignedTestService.getAllAssignedTests(),
+        centerService.getAllCenters()
+      ])
+
+      // 1. New user signups (students, eduadmins)
+      const userActivities = usersData
+        .filter((u: any) => u.role === 'user' || u.role === 'eduadmin')
+        .map((u: any) => {
+          const center = centers.find(c => c.id === u.center_id)
+          return {
+            type: u.role === 'user' ? 'student_signup' : 'eduadmin_signup',
+            who: u.name,
+            email: u.email,
+            phone: u.phone,
+            center: center?.name,
+            time: u.created_at,
+            role: u.role
+          }
+        })
+
+      // 2. Test created by eduadmin
+      const testActivities = tests.map((t: any) => {
+        const creator = usersData.find((u: any) => u.id === t.created_by)
+        return {
+          type: 'test_created',
+          who: creator?.name || 'Unknown',
+          email: creator?.email,
+          center: getCenterName(creator?.center_id || ''),
+          testTitle: t.title,
+          time: t.created_at,
+        }
+      })
+      // 3. Result confirmed by eduadmin (assigned_tests with confirmed_by_admin)
+      const resultActivities = assignedTests
+        .filter((at: any) => at.confirmed_by_admin && at.status === 'confirmed')
+        .map((at: any) => {
+          const eduadmin = usersData.find((u: any) => u.id === at.confirmed_by_admin)
+          const student = usersData.find((u: any) => u.id === at.user_id)
+          const test = tests.find((t: any) => t.id === at.test_id)
+          return {
+            type: 'result_confirmed',
+            who: eduadmin?.name || 'Unknown',
+            email: eduadmin?.email,
+            center: getCenterName(eduadmin?.center_id || ''),
+            student: student?.name,
+            testTitle: test?.title,
+            time: at.submitted_at || at.updated_at || at.confirmed_at || at.assigned_at,
+          }
+        })
+
+      // Sort activities by time
+      const allActivities = [
+        ...userActivities,
+        ...testActivities,
+        ...resultActivities,
+      ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+      
+      setActivities(allActivities)
+    } catch (error) {
+      console.error('Error loading activities:', error)
     }
   }
 
@@ -91,9 +171,17 @@ export default function SuperAdminDashboard() {
                   <p className="text-sm text-gray-500">Welcome, {profile.name}</p>
                 )}
               </div>
-              <Button onClick={handleLogout} variant="secondary">
-                Logout
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => router.push('/dashboard/superadmin/eduadmin-management')}
+                  className="btn-primary"
+                >
+                  Add Education Center
+                </Button>
+                <Button onClick={handleLogout} variant="secondary">
+                  Logout
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -120,16 +208,6 @@ export default function SuperAdminDashboard() {
                   {tab.label}
                 </button>
               ))}
-            </div>
-            
-            {/* Quick Actions */}
-            <div className="mt-4 flex gap-4">
-              <Button
-                onClick={() => router.push('/dashboard/superadmin/eduadmin-management')}
-                className="btn-primary"
-              >
-                Add Education Center
-              </Button>
             </div>
           </div>
 
@@ -194,20 +272,51 @@ export default function SuperAdminDashboard() {
                 <Card>
                   <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">New EduAdmin Created</p>
-                        <p className="text-sm text-gray-600">John Doe - IELTS Academy London</p>
-                      </div>
-                      <span className="text-sm text-gray-500">2 hours ago</span>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">Test Completed</p>
-                        <p className="text-sm text-gray-600">IELTS Academic Reading Test 1</p>
-                      </div>
-                      <span className="text-sm text-gray-500">4 hours ago</span>
-                    </div>
+                    {activities.length === 0 ? (
+                      <div className="text-center text-gray-400 py-6">No recent activity.</div>
+                    ) : (
+                      activities.slice(0, 8).map((a, i) => (
+                        <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div>
+                            {a.type === 'student_signup' && (
+                              <>
+                                <p className="font-medium">New Student Signup</p>
+                                <p className="text-sm text-gray-600">
+                                  {a.who} {a.phone}
+                                </p>
+                              </>
+                            )}
+                            {a.type === 'eduadmin_signup' && (
+                              <>
+                                <p className="font-medium">New EduAdmin Signup</p>
+                                <p className="text-sm text-gray-600">
+                                  {a.center} - {a.email || 'No email'}
+                                </p>
+                              </>
+                            )}
+                            {a.type === 'test_created' && (
+                              <>
+                                <p className="font-medium">Test Created</p>
+                                <p className="text-sm text-gray-600">
+                                  {a.who} – {a.email} {a.center && <>– {a.center}</>}<br />
+                                  <span className="font-semibold">{a.testTitle}</span>
+                                </p>
+                              </>
+                            )}
+                            {a.type === 'result_confirmed' && (
+                              <>
+                                <p className="font-medium">Result Confirmed</p>
+                                <p className="text-sm text-gray-600">
+                                  {a.who} – {a.email} {a.center && <>– {a.center}</>}<br />
+                                  Confirmed <span className="font-semibold">{a.student}</span>'s result for <span className="font-semibold">{a.testTitle}</span>
+                                </p>
+                              </>
+                            )}
+                          </div>
+                          <span className="text-sm text-gray-500">{new Date(a.time).toLocaleString()}</span>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </Card>
               </div>

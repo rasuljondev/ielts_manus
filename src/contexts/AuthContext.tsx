@@ -141,11 +141,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await authService.signOut()
       setUser(null)
       setProfile(null)
+      setLoading(false)
+      // Force reload to clear all state and session data
+      window.location.href = '/login'
     } catch (error) {
       console.error('Sign out error:', error)
-      throw error
-    } finally {
       setLoading(false)
+      throw error
     }
   }
 

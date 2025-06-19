@@ -78,10 +78,11 @@ export async function POST(request: NextRequest) {
       .from('users')
       .insert([{
         user_id: authData.user.id,
-        name: '', // Will be filled when user logs in
+        name: centerName, // Use center name as initial name
         phone: '', // Will be filled when user logs in
         role: 'eduadmin',
         center_id: center.id,
+        email: email // Store email in profile
       }])
       .select()
       .single();
@@ -99,9 +100,12 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      user: userProfile,
+      user: {
+        ...userProfile,
+        email: email,
+        centerName: centerName
+      },
       center: center,
-      email: email,
       message: 'Education center and EduAdmin account created successfully'
     }, { status: 201 });
 

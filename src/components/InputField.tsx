@@ -11,6 +11,7 @@ interface InputFieldProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   required?: boolean
   className?: string
+  disabled?: boolean
 }
 
 export default function InputField({
@@ -20,7 +21,8 @@ export default function InputField({
   value,
   onChange,
   required = false,
-  className = ''
+  className = '',
+  disabled = false
 }: InputFieldProps) {
   return (
     <motion.div
@@ -41,6 +43,7 @@ export default function InputField({
         onChange={onChange}
         required={required}
         className="input-field"
+        disabled={disabled}
       />
     </motion.div>
   )

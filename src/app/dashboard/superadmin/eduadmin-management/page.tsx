@@ -25,28 +25,51 @@ export default function EduAdminManagementPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
-  useEffect(() => {
-    loadData()
-  }, [])
-
   const loadData = async () => {
     try {
-      const [adminsData, centersData] = await Promise.all([
-        userService.getAllUsers(),
+      setIsLoading(true) // Set loading at the start
+      setError('') // Clear any previous errors
+
+      // Fetch users with emails from the API
+      const usersRes = await fetch('/api/users-with-emails')
+      if (!usersRes.ok) {
+        throw new Error('Failed to fetch users data')
+      }
+      const usersData = await usersRes.json()
+
+      const [centersData] = await Promise.all([
         centerService.getAllCenters()
       ])
       
       // Filter only eduadmins
-      const eduAdminsOnly = adminsData.filter(user => user.role === 'eduadmin')
+      const eduAdminsOnly = usersData.filter((user: any) => user.role === 'eduadmin')
+      
+      // Create email mapping
+      const emailMap = eduAdminsOnly.reduce((acc: any, admin: any) => {
+        if (admin.center_id) {
+          acc[admin.center_id] = admin.email
+        }
+        return acc
+      }, {})
+
       setEduAdmins(eduAdminsOnly)
+      setAdminEmails(emailMap)
       setCenters(centersData)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading data:', error)
-      setError('Failed to load data')
+      setError(error.message || 'Failed to load data')
+      // Set empty states to prevent undefined errors
+      setEduAdmins([])
+      setAdminEmails({})
+      setCenters([])
     } finally {
       setIsLoading(false)
     }
   }
+
+  useEffect(() => {
+    loadData()
+  }, []) // Empty dependency array to only run once on mount
 
   const handleCreateEducationCenter = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -101,9 +124,18 @@ export default function EduAdminManagementPage() {
   if (isLoading) {
     return (
       <ProtectedRoute allowedRoles={['superadmin']}>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-        </div>
+        <PageTransition>
+          <div className="min-h-screen p-6">
+            <div className="max-w-6xl mx-auto">
+              <div className="flex justify-between items-center mb-8">
+                <h1 className="text-3xl font-bold text-gradient">Education Center Management</h1>
+              </div>
+              <div className="flex items-center justify-center min-h-[400px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+              </div>
+            </div>
+          </div>
+        </PageTransition>
       </ProtectedRoute>
     )
   }
@@ -130,6 +162,12 @@ export default function EduAdminManagementPage() {
                 className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600"
               >
                 {error}
+                <button 
+                  onClick={loadData} 
+                  className="ml-4 text-sm underline hover:no-underline"
+                >
+                  Try Again
+                </button>
               </motion.div>
             )}
 
@@ -156,29 +194,20 @@ export default function EduAdminManagementPage() {
                   <form onSubmit={handleCreateEducationCenter} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <InputField
+                        label="Education Center Name"
+                        type="text"
+                        placeholder="Enter education center name"
+                        value={formData.centerName}
+                        onChange={(e) => handleInputChange('centerName', e.target.value)}
+                        required
+                      />
+
+                      <InputField
                         label="EduAdmin Email"
                         type="email"
                         placeholder="Enter EduAdmin email address"
                         value={formData.email}
                         onChange={(e) => handleInputChange('email', e.target.value)}
-                        required
-                      />
-
-                      <InputField
-                        label="Temporary Password"
-                        type="password"
-                        placeholder="Enter temporary password"
-                        value={formData.password}
-                        onChange={(e) => handleInputChange('password', e.target.value)}
-                        required
-                      />
-
-                      <InputField
-                        label="Center Name"
-                        type="text"
-                        placeholder="Enter education center name"
-                        value={formData.centerName}
-                        onChange={(e) => handleInputChange('centerName', e.target.value)}
                         required
                       />
 
@@ -190,13 +219,22 @@ export default function EduAdminManagementPage() {
                         onChange={(e) => handleInputChange('centerLocation', e.target.value)}
                         required
                       />
+
+                      <InputField
+                        label="Temporary Password"
+                        type="password"
+                        placeholder="Enter temporary password"
+                        value={formData.password}
+                        onChange={(e) => handleInputChange('password', e.target.value)}
+                        required
+                      />
                     </div>
 
                     <div className="bg-blue-50 p-4 rounded-lg">
                       <h3 className="font-semibold text-blue-700 mb-2">Important Notes:</h3>
                       <div className="text-sm text-blue-600 space-y-1">
                         <p>• EduAdmin will receive login credentials via email</p>
-                        <p>• EduAdmin can complete their profile after first login</p>
+                        <p>• EduAdmin must complete their profile after first login</p>
                         <p>• Password must be at least 6 characters long</p>
                         <p>• Email will be auto-confirmed for immediate access</p>
                       </div>
@@ -243,7 +281,7 @@ export default function EduAdminManagementPage() {
                     <tbody>
                       {centers.map((center) => {
                         const eduAdmin = eduAdmins.find(admin => admin.center_id === center.id)
-                        const email = adminEmails[center.id] || 'Not available'
+                        const email = adminEmails[center.id]
                         return (
                           <tr key={center.id} className="border-b border-gray-100 hover:bg-gray-50">
                             <td className="py-3 px-4 font-medium">{center.name}</td>
