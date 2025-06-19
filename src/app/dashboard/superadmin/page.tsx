@@ -389,9 +389,6 @@ export default function SuperAdminDashboard() {
                         </div>
                         <h3 className="font-semibold text-lg">{center.name}</h3>
                         <p className="text-gray-600">{center.location}</p>
-                        <div className="mt-4">
-                          <Button variant="secondary">View Details</Button>
-                        </div>
                       </div>
                     </Card>
                   ))}
