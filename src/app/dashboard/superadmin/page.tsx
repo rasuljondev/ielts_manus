@@ -9,11 +9,12 @@ import InputField from '@/components/InputField'
 import PageTransition from '@/components/PageTransition'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { useAuth } from '@/contexts/AuthContext'
-import { userService, centerService, testService } from '@/lib/database'
+import { centerService, testService } from '@/lib/database'
 import type { User, EducationCenter, Test } from '@/lib/supabase'
 
 export default function SuperAdminDashboard() {
   const [eduAdmins, setEduAdmins] = useState<User[]>([])
+  const [students, setStudents] = useState<User[]>([])
   const [centers, setCenters] = useState<EducationCenter[]>([])
   const [tests, setTests] = useState<Test[]>([])
   const [loading, setLoading] = useState(true)
@@ -29,16 +30,16 @@ export default function SuperAdminDashboard() {
 
   const loadData = async () => {
     try {
-      const [usersData, centersData, testsData] = await Promise.all([
-        userService.getAllUsers(),
+      // Fetch users with emails from the API
+      const usersRes = await fetch('/api/users-with-emails')
+      const usersData = await usersRes.json()
+      const [centersData, testsData] = await Promise.all([
         centerService.getAllCenters(),
         testService.getAllTests()
       ])
-
-      // Filter EduAdmins
-      const adminUsers = usersData.filter((u: User) => u.role === 'eduadmin')
-
-      setEduAdmins(adminUsers)
+      // Separate EduAdmins and Students
+      setEduAdmins(usersData.filter((u: User) => u.role === 'eduadmin'))
+      setStudents(usersData.filter((u: User) => u.role === 'user'))
       setCenters(centersData)
       setTests(testsData)
     } catch (error) {
@@ -58,10 +59,9 @@ export default function SuperAdminDashboard() {
   }
 
   const getTotalStats = () => {
-    const totalStudents = 0 // Will be calculated from users with role 'user'
+    const totalStudents = students.length
     const totalTests = tests.length
     const activeCenters = centers.length
-
     return { totalStudents, totalTests, activeCenters, totalCenters: centers.length }
   }
 
@@ -103,6 +103,7 @@ export default function SuperAdminDashboard() {
               {[
                 { id: 'overview', label: 'Overview', icon: '📊' },
                 { id: 'admins', label: 'EduAdmins', icon: '👨‍💼' },
+                { id: 'students', label: 'Students', icon: '👩‍🎓' },
                 { id: 'centers', label: 'Centers', icon: '🏢' },
                 { id: 'tests', label: 'Tests', icon: '📝' }
               ].map((tab) => (
@@ -230,10 +231,34 @@ export default function SuperAdminDashboard() {
                           <span className="text-2xl">👨‍💼</span>
                         </div>
                         <h3 className="font-semibold text-lg">{admin.name || 'Admin'}</h3>
-                        <p className="text-gray-600">{admin.user_id}</p>
+                        <p className="text-gray-600">{admin.email || admin.user_id}</p>
                         <p className="text-sm text-gray-500">{admin.phone || 'No phone'}</p>
                         <div className="mt-4">
                           <Button variant="secondary">Edit</Button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Students Tab */}
+            {activeTab === 'students' && (
+              <div>
+                <h2 className="text-2xl font-bold mb-6">Students</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {students.map((student) => (
+                    <Card key={student.id}>
+                      <div className="text-center">
+                        <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <span className="text-2xl">👩‍🎓</span>
+                        </div>
+                        <h3 className="font-semibold text-lg">{student.name || 'Student'}</h3>
+                        <p className="text-gray-600">{student.email || student.user_id}</p>
+                        <p className="text-sm text-gray-500">{student.phone || 'No phone'}</p>
+                        <div className="mt-4">
+                          <Button variant="secondary">View Details</Button>
                         </div>
                       </div>
                     </Card>

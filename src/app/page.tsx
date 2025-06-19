@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Button from '@/components/Button'
 import PageTransition from '@/components/PageTransition'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function HomePage() {
   const router = useRouter()
+  const { signOut } = useAuth()
 
   useEffect(() => {
     // Check if user is already logged in
@@ -17,6 +19,16 @@ export default function HomePage() {
       router.push(`/dashboard/${userData.role}`)
     }
   }, [router])
+
+  const handleSignIn = async () => {
+    await signOut()
+    router.push('/login')
+  }
+
+  const handleSignUp = async () => {
+    await signOut()
+    router.push('/signup')
+  }
 
   return (
     <PageTransition>
@@ -42,13 +54,13 @@ export default function HomePage() {
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
             <Button
-              onClick={() => router.push('/login')}
+              onClick={handleSignIn}
               className="text-lg px-8 py-4"
             >
               Sign In
             </Button>
             <Button
-              onClick={() => router.push('/signup')}
+              onClick={handleSignUp}
               variant="secondary"
               className="text-lg px-8 py-4"
             >

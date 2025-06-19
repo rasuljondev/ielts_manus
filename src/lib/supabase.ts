@@ -21,6 +21,7 @@ export interface User {
   role: 'superadmin' | 'eduadmin' | 'user'
   center_id?: string
   created_at: string
+  email?: string
 }
 
 export interface Test {

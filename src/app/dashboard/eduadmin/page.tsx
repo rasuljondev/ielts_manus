@@ -9,7 +9,7 @@ import InputField from '@/components/InputField'
 import PageTransition from '@/components/PageTransition'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { useAuth } from '@/contexts/AuthContext'
-import { userService, testService, centerService } from '@/lib/database'
+import { testService, centerService } from '@/lib/database'
 import type { User, Test, EducationCenter } from '@/lib/supabase'
 
 export default function EduAdminDashboard() {
@@ -36,22 +36,19 @@ export default function EduAdminDashboard() {
 
   const loadData = async () => {
     try {
-      const [usersData, testsData, centerData] = await Promise.all([
-        userService.getAllUsers(),
+      // Fetch users with emails from the API
+      const usersRes = await fetch('/api/users-with-emails')
+      const usersData = await usersRes.json()
+      const [testsData, centerData] = await Promise.all([
         testService.getAllTests(),
         centerService.getCenterById(profile?.center_id || '')
       ])
-
       // Filter students from same education center
       const centerStudents = usersData.filter((u: User) => 
         u.role === 'user' && u.center_id === profile?.center_id
       )
-
-      // Filter tests for this center
-      const centerTests = testsData.filter((t: Test) => t.center_id === profile?.center_id)
-
       setStudents(centerStudents)
-      setTests(centerTests)
+      setTests(testsData)
       setCenter(centerData)
     } catch (error) {
       console.error('Error loading data:', error)
@@ -71,7 +68,6 @@ export default function EduAdminDashboard() {
 
   const handleCreateTest = async () => {
     if (!newTest.title || !newTest.description || !profile?.center_id) return
-
     try {
       // Create test using the service
       const createdTest = await testService.createTest({
@@ -80,7 +76,6 @@ export default function EduAdminDashboard() {
         center_id: profile.center_id,
         questions: [] // Will be added later
       })
-
       setTests([...tests, createdTest])
       setNewTest({ title: '', description: '', type: 'academic', duration: 150 })
       setShowCreateTest(false)
@@ -161,7 +156,7 @@ export default function EduAdminDashboard() {
                             <span className="text-2xl">👤</span>
                           </div>
                           <h3 className="font-semibold text-lg">{student.name || 'Student'}</h3>
-                          <p className="text-gray-600">{student.user_id}</p>
+                          <p className="text-gray-600">{student.email || student.user_id}</p>
                           <p className="text-sm text-gray-500">{student.phone || 'No phone'}</p>
                           <div className="mt-4 space-y-2">
                             <div className="flex justify-between text-sm">
